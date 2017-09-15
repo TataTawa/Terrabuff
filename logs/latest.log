@@ -1,0 +1,23 @@
+[01:51:51] [main/INFO]: Setting user: Player524
+[01:51:53] [Client thread/INFO]: LWJGL Version: 2.9.1
+[01:52:08] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:DummyCore, FMLFileResourcePack:Buffed Tools
+[01:52:09] [Sound Library Loader/INFO]: Sound engine started
+[01:52:11] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
+[01:52:11] [Client thread/INFO]: Created: 16x16 textures/items-atlas
+[01:52:11] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:DummyCore, FMLFileResourcePack:Buffed Tools
+[01:52:12] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[01:52:12] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[01:52:13] [Sound Library Loader/INFO]: Sound engine started
+[01:52:19] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[01:52:19] [Server thread/INFO]: Generating keypair
+[01:52:20] [Server thread/INFO]: Preparing start region for level 0
+[01:52:21] [Server thread/INFO]: Preparing spawn area: 20%
+[01:52:22] [Server thread/INFO]: Preparing spawn area: 80%
+[01:52:22] [Server thread/INFO]: Changing view distance to 12, from 10
+[01:52:23] [Server thread/INFO]: Player524[local:E:5f664cc7] logged in with entity id 440 at (-112.48330252733594, 71.0, 245.75530345995472)
+[01:52:23] [Server thread/INFO]: Player524 加入了游戏
+[01:52:48] [Client thread/INFO]: Stopping!
+[01:52:48] [Server thread/INFO]: Stopping server
+[01:52:48] [Server thread/INFO]: Saving players
+[01:52:48] [Server thread/INFO]: Saving worlds
+[01:52:48] [Server thread/INFO]: Saving chunks for level '新的世界3'/Overworld
