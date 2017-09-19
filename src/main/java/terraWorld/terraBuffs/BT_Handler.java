@@ -252,6 +252,14 @@ public class BT_Handler{
 					{
 						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"对燃烧的敌人伤害 "+"+"+(int)da + "%");
 					}
+					else if(d[i].fieldName.equals("posionresist"))
+					{
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"毒素抵抗力 "+"+"+(int)da + "%");
+					}
+					else if(d[i].fieldName.equals("posionresistmax"))
+					{
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"最大毒素抵抗力 "+"+"+(int)da + "%");
+					}
 					else if(d[i].fieldName.equals("damageboost"))
 					{
 						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"击中敌人"+(int)da + "%几率暂时强化力量");
@@ -268,8 +276,8 @@ public class BT_Handler{
 					}
 					else if(d[i].fieldName.equals("speed"))
 					{
-						if (da > 0)event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击速度 "+"+"+(int)da + "%");
-						else event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor()+"攻击速度 "+(int)da + "%");
+						if (da > 0)event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击和采掘速度 "+"+"+(int)da + "%");
+						else event.toolTip.add(EnumRarityColor.ULTIMATE.getRarityColor()+"攻击和采掘速度 "+(int)da + "%");
 					}
 					else if(d[i].fieldName.equals("damage"))
 					{
@@ -515,6 +523,8 @@ public class BT_Handler{
 				if(damageruduce > 0.5) damageruduce = 0.5;
 				event.ammount *= 1-damageruduce;
 			}
+		} else {
+
 		}
 	}
 
@@ -549,6 +559,39 @@ public class BT_Handler{
 							//p.swingProgressInt -= value*30;
 							event.setCanceled(true);
 						}
+					}
+				}
+			}
+		} else {
+			if(event.entity instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer)event.entity;
+				if(player.isPotionActive(Potion.poison) && dms.damageType.equals("magic") && event.ammount==1.0F) {
+					double posionresist = 0;
+					double posionresistmax = 0;
+					for(int i=0;i<4;i++) {
+						if (player.getCurrentArmor(i) != null && BT_Utils.itemHasEffect(player.getCurrentArmor(i))) {
+							ItemStack stack = player.getCurrentArmor(i);
+							String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+							DummyData[] d = DataStorage.parseData(dummyDataString);
+							for (int i1 = 0; i1 < d.length; ++i1) {
+								DummyData data = d[i1];
+								String name = data.fieldName;
+								double value = Double.parseDouble(data.fieldValue);
+								if(name.equals("posionresist")) {
+									posionresist += value;
+								}
+								if(name.equals("posionresistmax")) {
+									posionresistmax += value;
+								}
+							}
+						}
+					}
+					if(posionresist > 0.75) {
+						if(posionresistmax>0.2) posionresistmax=0.2;
+						if(posionresist > 0.75 + posionresistmax) posionresist = 0.75 + posionresistmax;
+					}
+					if(player.worldObj.rand.nextDouble() < posionresist) {
+						event.setCanceled(true);
 					}
 				}
 			}

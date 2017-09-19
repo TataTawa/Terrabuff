@@ -200,6 +200,16 @@ public class BT_Utils {
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("weaknessenemywhenhited",g));
 				}
+				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
+				{
+					while ((g = Math.abs(random.nextGaussian() / (6 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					l2.add(new DummyData("posionresist",g));
+				}
+				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
+				{
+					while ((g = Math.abs(random.nextGaussian() / (6 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					l2.add(new DummyData("posionresistmax",g));
+				}
 				if(random.nextDouble()<0.04 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
