@@ -55,6 +55,11 @@ public class BT_Effect {
 	{
 		return rarity.getRarityColor()+name;
 	}
+
+	public String getOnlyName()
+	{
+		return name;
+	}
 	
 	public String getColor()
 	{

@@ -96,9 +96,9 @@ public class BT_Utils {
 					l2.add(new DummyData("weakness",g));
 				}
 
-				if(random.nextDouble()<0.07 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.15 * (1 + magicfind/5) )
 				{
-					while ((g = Math.abs(random.nextGaussian() / (20 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					while ((g = Math.abs(random.nextGaussian() / (4 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("experience",g));
 				}
 
@@ -160,82 +160,82 @@ public class BT_Utils {
 
 				double g;
 
-				if(random.nextDouble()<0.2 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.25 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (1 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("inherit",g));
 				}
-				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
 				{
-					while ((g = Math.abs(random.nextGaussian() / (20 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					while ((g = Math.abs(random.nextGaussian() / (4 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("experience",g));
 				}
-				if(random.nextDouble()<0.03 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("speedwhenhited",g));
 				}
-				if(random.nextDouble()<0.03 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("resistancewhenhited",g));
 				}
-				if(random.nextDouble()<0.03 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("absorptionwhenhited",g));
 				}
-				if(random.nextDouble()<0.03 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("poisonenemywhenhited",g));
 				}
-				if(random.nextDouble()<0.03 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("slowenemywhenhited",g));
 				}
-				if(random.nextDouble()<0.03 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("weaknessenemywhenhited",g));
 				}
-				if(random.nextDouble()<0.03 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.04 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("witherenemywhenhited",g));
 				}
-				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (50 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("entitydamagereduce",g));
 				}
-				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (50 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("entitydamagereducewhenlowhealth",g));
 				}
-				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (50 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("entitydamagereducewhenstrongenemy",g));
 				}
-				if(random.nextDouble()<0.1 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.13 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (2 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("eatheal1",g));
 				}
-				if(random.nextDouble()<0.1 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.13 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (2 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("xpheal1",g));
 				}
-				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
+				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (5 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("savebonemeal",g));
 				}
-				if(random.nextDouble()< 0.2 * (1 + magicfind/5) )
+				if(random.nextDouble()< 0.25 * (1 + magicfind/5) )
 				{
 					g = random.nextGaussian()/4;
 					while (g>1 || g<-1 || Math.abs(g)<0.01)  g = random.nextGaussian()/4;
@@ -287,11 +287,11 @@ public class BT_Utils {
 				}
 				if(originalName == null || originalName.isEmpty())
 				{
-					display.setString("Name", color + effect.getName()+""+stk.getDisplayName());
+					display.setString("Name", color + effect.getOnlyName()+""+stk.getDisplayName());
 				}
 				else
 				{
-					display.setString("Name", color + effect.getName()+""+originalName);
+					display.setString("Name", color + effect.getOnlyName()+""+originalName);
 				}
 				itemTag.setTag("display", display);
 

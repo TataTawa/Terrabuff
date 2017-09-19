@@ -14,7 +14,7 @@ public class BT_EventHandler {
 	@SubscribeEvent
 	public void onClientPacketRecieved(DummyEvent_OnClientGUIButtonPress event)
 	{
-		if(event.client_ParentClassPath.equalsIgnoreCase("terraWorld.terraBuffs.BT_GuiAnvil") && !event.presser.worldObj.isRemote)
+		if(event.client_ParentClassPath.equalsIgnoreCase("terraWorld.terraBuffs.BT_GuiAnvil"))
 		{
 			TileEntity tile = event.presser.worldObj.getTileEntity(event.x, event.y, event.z);
 			int cost = Integer.parseInt(event.additionalData[0].fieldValue);

@@ -4,11 +4,18 @@ import DummyCore.Utils.DataStorage;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 import DummyCore.Utils.MiscUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentData;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityZombie;
@@ -22,18 +29,25 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionHelper;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BT_Handler{
+
+	Gson gson = new Gson();
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onCrafting(ItemCraftedEvent event) {
@@ -86,10 +100,6 @@ public class BT_Handler{
 				//if(event.entity.worldObj.rand.nextDouble() < 0.25 * (2-magicfind)) return;
 				for(EntityItem entityItem : event.drops)
 				{
-					if(entityItem.getEntityItem().getTagCompound().getBoolean("BT_Tossed")) {
-						entityItem.getEntityItem().getTagCompound().removeTag("BT_Tossed");
-						continue;
-					}
 					if(event.entity.worldObj.rand.nextDouble() < 0.25 * (2-magicfind)) continue;
 					if(BT_Utils.isItemBuffable(entityItem.getEntityItem()) && !BT_Utils.itemHasEffect(entityItem.getEntityItem()))
 						BT_Utils.addRandomEffects(entityItem.getEntityItem(), magicfind);
@@ -108,6 +118,7 @@ public class BT_Handler{
 	public void getXP(PlayerPickupXpEvent event)
 	{
 		EntityPlayer player = event.entityPlayer;
+		double xpIncrease =0;
 		if(player.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(player.getCurrentEquippedItem())) {
 			ItemStack stack = player.getCurrentEquippedItem();
 			String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
@@ -117,7 +128,7 @@ public class BT_Handler{
 				String name = data.fieldName;
 				double value = Double.parseDouble(data.fieldValue);
 				if (name.equals("experience")) {
-					event.orb.xpValue *= (1 + value);
+					xpIncrease += value;
 				}
 			}
 		}
@@ -131,7 +142,7 @@ public class BT_Handler{
 					String name = data.fieldName;
 					double value = Double.parseDouble(data.fieldValue);
 					if (name.equals("experience")) {
-						event.orb.xpValue *= (1 + value);
+						xpIncrease += value;
 					}
 					else if (name.equals("xpheal1")) {
 						if(player.worldObj.rand.nextDouble() <= value)
@@ -143,6 +154,7 @@ public class BT_Handler{
 				}
 			}
 		}
+		event.orb.xpValue *= 1+xpIncrease;
 	}
 
 	@SubscribeEvent
@@ -351,6 +363,7 @@ public class BT_Handler{
 	public void event_LivingHurtEvent(LivingHurtEvent event)
 	{
 		DamageSource dms = event.source;
+		//Minecraft.getMinecraft().thePlayer.sendChatMessage();
 		if(dms instanceof EntityDamageSource)
 		{
 			EntityDamageSource edms = (EntityDamageSource)dms;
@@ -390,7 +403,7 @@ public class BT_Handler{
 						{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
-								p.addPotionEffect(new PotionEffect(Potion.damageBoost.getId(),2));
+								p.addPotionEffect(new PotionEffect(Potion.damageBoost.getId(),40));
 							}
 						}
 						else if(name.equals("stealth"))
@@ -401,21 +414,21 @@ public class BT_Handler{
 						{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
-								event.entityLiving.addPotionEffect(new PotionEffect(Potion.poison.getId(),(int)(value * 100)));
+								event.entityLiving.addPotionEffect(new PotionEffect(Potion.poison.getId(),(int)(value * 2000)));
 							}
 						}
 						else if(name.equals("weakness"))
 						{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
-								event.entityLiving.addPotionEffect(new PotionEffect(Potion.weakness.getId(),(int)(value * 100)));
+								event.entityLiving.addPotionEffect(new PotionEffect(Potion.weakness.getId(),(int)(value * 2000)));
 							}
 						}
 						else if(name.equals("slow"))
 						{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
-								event.entityLiving.addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),(int)(value * 100),2));
+								event.entityLiving.addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),(int)(value * 2000),2));
 							}
 						}
 						else if(name.equals("knock"))
@@ -455,44 +468,44 @@ public class BT_Handler{
 							}
 							if (name.equals("speedwhenhited")) {
 								if(player.worldObj.rand.nextDouble() < value) {
-									player.addPotionEffect(new PotionEffect(Potion.moveSpeed.getId(),3));
+									player.addPotionEffect(new PotionEffect(Potion.moveSpeed.getId(),60));
 								}
 							}
 							if (name.equals("resistancewhenhited")) {
 								if(player.worldObj.rand.nextDouble() < value) {
-									player.addPotionEffect(new PotionEffect(Potion.resistance.getId(),3));
+									player.addPotionEffect(new PotionEffect(Potion.resistance.getId(),60));
 								}
 							}
 							if (name.equals("absorptionwhenhited")) {
 								if(player.worldObj.rand.nextDouble() < value) {
-									player.addPotionEffect(new PotionEffect(Potion.field_76444_x.getId(),3));
+									player.addPotionEffect(new PotionEffect(Potion.field_76444_x.getId(),60));
 								}
 							}
 							if (name.equals("poisonenemywhenhited")) {
 								if(event.source.getEntity() instanceof EntityLiving) {
 									if(player.worldObj.rand.nextDouble() < value) {
-										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.poison.getId(),3));
+										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.poison.getId(),60));
 									}
 								}
 							}
 							if (name.equals("slowenemywhenhited")) {
 								if(event.source.getEntity() instanceof EntityLiving) {
 									if(player.worldObj.rand.nextDouble() < value) {
-										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),3,2));
+										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),60,2));
 									}
 								}
 							}
 							if (name.equals("weaknessenemywhenhited")) {
 								if(event.source.getEntity() instanceof EntityLiving) {
 									if(player.worldObj.rand.nextDouble() < value) {
-										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.weakness.getId(),3));
+										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.weakness.getId(),60));
 									}
 								}
 							}
 							if (name.equals("witherenemywhenhited")) {
 								if(event.source.getEntity() instanceof EntityLiving) {
 									if(player.worldObj.rand.nextDouble() < value) {
-										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.wither.getId(),3));
+										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.wither.getId(),40,2));
 									}
 								}
 							}
@@ -621,21 +634,129 @@ public class BT_Handler{
 		}
 	}
 
+
+
+
 	@SubscribeEvent
-	public void onToss(ItemTossEvent event) {
-		if(!event.player.worldObj.isRemote && event.entity instanceof EntityItem) {
-			ItemStack stack = ((EntityItem) event.entity).getEntityItem();
-			if(BT_Utils.isItemBuffable(stack) && !BT_Utils.itemHasEffect(stack)) {
-				stack.getTagCompound().setBoolean("BT_Tossed",true);
+	public void onPlayerDeath(LivingDeathEvent e) {
+		if(MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleBooleanValue("keepNoInventory")) return;
+		if (e.entity instanceof EntityPlayer && !e.entity.worldObj.isRemote && !MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleBooleanValue("keepAllInventory")) {
+			EntityPlayer player = (EntityPlayer) e.entity;
+			NBTTagCompound tag = player.getEntityData().getCompoundTag("PlayerPersisted");tag.toString();
+			int interventionID = -1;
+			for (int x=0;x<Enchantment.enchantmentsList.length;x++) {
+				if(Enchantment.enchantmentsList[x] != null &&
+						Enchantment.enchantmentsList[x].getName().endsWith("enchantment.intervention")) {
+					interventionID = x;break;
+				}
+			}
+			for (int x = 0; x < 4; ++x) {
+				if (player.inventory.armorItemInSlot(x) != null) {
+					ItemStack var5 = player.inventory.armorItemInSlot(x).copy();
+					if ((interventionID >= 0 && EnchantmentHelper.getEnchantmentLevel(interventionID, var5) > 0) ||
+							isNevermineDivineTool(var5) ||
+							btInherit(var5.getTagCompound(), player)) {
+						tag.setString("armorstr" + String.valueOf(x) + "p1", itemStackToPartString(var5));
+						tag.setTag("armorstr" + String.valueOf(x) + "p2", var5.getTagCompound());
+						player.inventory.armorInventory[x] = null;
+					}
+				}
+			}
+
+			for(int x = 0; x < 36; ++x) {
+				if (player.inventory.getStackInSlot(x) != null) {
+					ItemStack var5 = player.inventory.getStackInSlot(x).copy();
+
+					if ((interventionID > 0 && EnchantmentHelper.getEnchantmentLevel(interventionID, var5) > 0) ||
+							isNevermineDivineTool(var5) ||
+							btInherit(var5.getTagCompound(), player)) {
+						tag.setString("inventorystr" + String.valueOf(x) + "p1", itemStackToPartString(var5));
+						tag.setTag("inventorystr" + String.valueOf(x) + "p2", var5.getTagCompound());
+						player.inventory.setInventorySlotContents(x, null);
+					}
+				}
+			}
+
+			if(player instanceof EntityPlayerMP) {
+				((EntityPlayerMP) player).sendContainerToPlayer((player).inventoryContainer);
 			}
 		}
 	}
 
 	@SubscribeEvent
-	public void onPickupItem(EntityItemPickupEvent event) {
-		if(!event.entityPlayer.worldObj.isRemote) {
-			ItemStack stack = (event.item).getEntityItem();
-			stack.getTagCompound().removeTag("BT_Tossed");
+	public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent e) {
+		if(MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleBooleanValue("keepNoInventory")) return;
+		if (!e.player.worldObj.isRemote && !MinecraftServer.getServer().worldServerForDimension(0).getGameRules().getGameRuleBooleanValue("keepAllInventory")) {
+			NBTTagCompound tag = e.player.getEntityData().getCompoundTag("PlayerPersisted");
+			EntityPlayer player = e.player;
+			String s;
+			for (int x = 0; x < 4; ++x) {
+				if (!(s = tag.getString("armorstr" + String.valueOf(x) + "p1")).equals("")) {
+					ItemStack var5 = partStringToItem(s);
+					var5.setTagCompound(tag.getCompoundTag("armorstr" + String.valueOf(x) + "p2"));
+					e.player.inventory.armorInventory[x] = var5;
+					tag.removeTag("armorstr" + String.valueOf(x) + "p1");
+					tag.removeTag("armorstr" + String.valueOf(x) + "p2");
+				}
+			}
+			for(int x = 0; x < 36; ++x) {
+				if (!(s = tag.getString("inventorystr" + String.valueOf(x) + "p1")).equals("")) {
+					ItemStack var5 = partStringToItem(s);
+					var5.setTagCompound(tag.getCompoundTag("inventorystr" + String.valueOf(x) + "p2"));
+					e.player.inventory.setInventorySlotContents(x, var5);
+					tag.removeTag("inventorystr" + String.valueOf(x) + "p1");
+					tag.removeTag("inventorystr" + String.valueOf(x) + "p2");
+				}
+			}
+
+			if(player instanceof EntityPlayerMP) {
+				((EntityPlayerMP) player).sendContainerToPlayer((player).inventoryContainer);
+			}
 		}
 	}
+
+	public boolean btInherit(NBTTagCompound tag, EntityPlayer player) {
+		if(tag!=null && tag.hasKey("BT_TagList") && tag.getTag("BT_TagList") != null &&
+				((NBTTagCompound)tag.getTag("BT_TagList")).getString("BT_Buffs").contains("inherit")) {
+			String[] buffs = ((NBTTagCompound)tag.getTag("BT_TagList")).getString("BT_Buffs").split("\\|{2}");
+			for(String s : buffs) {
+				if(s.contains("inherit") && player.worldObj.rand.nextDouble() < Double.valueOf(s.split(":")[1])) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public String itemStackToPartString(ItemStack itemStack) {
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("itemid",Item.getIdFromItem(itemStack.getItem()));
+		map.put("stacksize",itemStack.stackSize);
+		map.put("itemdamage",itemStack.getItemDamage());
+		return gson.toJson(map);
+	}
+
+	public ItemStack partStringToItem(String s) {
+		Map<String,Integer> map = gson.fromJson(s, new TypeToken<Map<String,Integer>>(){}.getType());
+		return new ItemStack(Item.getItemById(map.get("itemid")),
+				map.get("stacksize"),
+				map.get("itemdamage"));
+	}
+
+
+	public boolean isNevermineDivineTool(ItemStack stk)
+	{
+		if(stk == null || stk.getItem() == null)return false;
+		try
+		{
+			Class clazz = Class.forName("net.nevermine.implement.ItemDivine");
+			Class toolClazz = stk.getItem().getClass();
+			return clazz.isAssignableFrom(toolClazz);
+		}catch(Exception e)
+		{
+			return false;
+		}
+	}
+
+
 }
