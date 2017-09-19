@@ -1,0 +1,9 @@
+2017.09.19
+1. Add some kind of mechanism to alter the performance of the anvil by offering additional item(s):
+    i.e., reducing xp/gold consumption, altering E/sigma of the distribution of specific enchantment stat, fomules for specific effect(s)
+    (as orange items in Diablo II)
+
+2. Item specific enchantments, such as helmet + underwater breath, boots + speed↑， pickaxe + fortune, etc.
+
+3. Extend the enchantment to all kinds of items, blocks, foods, and any other things, creating a high quality item and its possible 
+   enchantment list for every available id.
