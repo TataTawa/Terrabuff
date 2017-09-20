@@ -1,0 +1,27 @@
+2017.09.19
+1. Add some kind of mechanism to alter the performance of the anvil by offering additional item(s):
+    i.e., reducing xp/gold consumption, altering E/sigma of the distribution of specific enchantment stat, fomulas for specific effect(s)
+    (as orange items in Diablo II)
+
+2. Add item-specific enchantments, such as helmet + underwater breath, boots + speed↑， pickaxe + fortune, etc.
+
+3. Extend the enchantment to all kinds of items, blocks, foods, and any other things, creating a high quality item and its possible 
+   enchantment list for every available id.
+
+4. Revising stat of enchantments during random enchanting.
+    i. Creating enchant-specific Possibility/expectation which could reflect their relative importance in actual game play.
+    ii. It is possible to change the enchanting possibility function from continuous to discrete, at least for some of the enchantment. 
+        This will introduce different grade of a certain enchantment, which is a feasible way for achiving 4.i, and also further allows 
+        a more direct affection of enchanting upgrade described in 1.
+
+5. Revising consumption calculation fomula. The present fomula could not corelate with the relative effect of a given enchantment. 
+   I personally suggest to use a fuction like this:
+         foreach property x in item
+             total_consumption += ( basic_score(x) + additional_cost(x) ) * coefficient(x)
+             
+         basic score is based on the enchantment type. It may vary between different enchantment as they could induce diverse buff/debuff
+             effects on items.
+         additional cost is related to the strength of enchantment, as enchantment will get stronger when level up.
+         coefficient is related to enchantment type and, mostly, related to its positive/negative nature. The coefficient should be 
+             designed for each enchantment to balance their influence on the total performance in a specific enchantment set. And
+             the number of the coefficient may change among different enchantment combinations or different levels of enchantment.
