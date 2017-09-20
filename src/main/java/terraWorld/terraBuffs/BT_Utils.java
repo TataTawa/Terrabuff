@@ -114,6 +114,12 @@ public class BT_Utils {
 					l2.add(new DummyData("damagetoburn",g));
 				}
 
+				if(random.nextDouble()<0.07 * (1 + magicfind/5) )
+				{
+					while ((g = Math.abs(random.nextGaussian() / (8 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					l2.add(new DummyData("healincreasepercent",g));
+				}
+
 				if(random.nextDouble()<0.2 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (1 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
@@ -209,6 +215,21 @@ public class BT_Utils {
 				{
 					while ((g = Math.abs(random.nextGaussian() / (6 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("posionresistmax",g));
+				}
+				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
+				{
+					while ((g = Math.abs(random.nextGaussian() / (16 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					l2.add(new DummyData("fireresist",g));
+				}
+				if(random.nextDouble()<0.05 * (1 + magicfind/5) )
+				{
+					while ((g = Math.abs(random.nextGaussian() / (6 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					l2.add(new DummyData("fireresistmax",g));
+				}
+				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
+				{
+					while ((g = Math.abs(random.nextGaussian() / (6 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					l2.add(new DummyData("healincreasepercent",g));
 				}
 				if(random.nextDouble()<0.04 * (1 + magicfind/5) )
 				{

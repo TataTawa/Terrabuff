@@ -37,6 +37,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.*;
 import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
@@ -258,7 +259,19 @@ public class BT_Handler{
 					}
 					else if(d[i].fieldName.equals("posionresistmax"))
 					{
-						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"最大毒素抵抗力 "+"+"+(int)da + "%");
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"最大毒抗 "+"+"+(int)da + "%");
+					}
+					else if(d[i].fieldName.equals("fireresist"))
+					{
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"火焰抵抗力 "+"+"+(int)da + "%");
+					}
+					else if(d[i].fieldName.equals("fireresistmax"))
+					{
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"最大火抗 "+"+"+(int)da + "%");
+					}
+					else if(d[i].fieldName.equals("healincreasepercent"))
+					{
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"治疗效果 "+"+"+(int)da + "%");
 					}
 					else if(d[i].fieldName.equals("damageboost"))
 					{
@@ -471,7 +484,7 @@ public class BT_Handler{
 							}
 							if (name.equals("entitydamagereducewhenstrongenemy")) {
 								if(event.source.getEntity() instanceof EntityLiving) {
-									if(((EntityLiving) event.source.getEntity()).getHealth()>80) damageruduce += value;
+									if(((EntityLiving) event.source.getEntity()).getHealth()>50) damageruduce += value;
 								}
 							}
 							if (name.equals("speedwhenhited")) {
@@ -524,8 +537,38 @@ public class BT_Handler{
 				event.ammount *= 1-damageruduce;
 			}
 		} else {
-
+			if(event.entity instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer) event.entity;
+				if(dms.isFireDamage()) {
+					double fireresist = 0;
+					double fireresistmax = 0;
+					for (int i = 0; i < 4; i++) {
+						if (player.getCurrentArmor(i) != null && BT_Utils.itemHasEffect(player.getCurrentArmor(i))) {
+							ItemStack stack = player.getCurrentArmor(i);
+							String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+							DummyData[] d = DataStorage.parseData(dummyDataString);
+							for (int i1 = 0; i1 < d.length; ++i1) {
+								DummyData data = d[i1];
+								String name = data.fieldName;
+								double value = Double.parseDouble(data.fieldValue);
+								if(name.equals("fireresist")) {
+									fireresist += value;
+								}
+								if(name.equals("fireresistmax")) {
+									fireresistmax += value;
+								}
+								if(fireresist > 0.5) {
+									if(fireresistmax>0.3) fireresistmax=0.3;
+									if(fireresist > 0.5 + fireresistmax) fireresist = 0.5 + fireresistmax;
+								}
+							}
+						}
+					}
+					event.ammount *= 1 - fireresist;
+				}
+			}
 		}
+
 	}
 
 	@SubscribeEvent(priority=EventPriority.LOWEST)
@@ -677,7 +720,42 @@ public class BT_Handler{
 		}
 	}
 
-
+	@SubscribeEvent
+	public void onHeal(LivingHealEvent event) {
+		if(!event.entity.worldObj.isRemote && event.entity instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer) event.entity;
+			double healincrease = 0;
+			if(player.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(player.getCurrentEquippedItem())) {
+				ItemStack stack = player.getCurrentEquippedItem();
+				String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+				DummyData[] d = DataStorage.parseData(dummyDataString);
+				for (int i1 = 0; i1 < d.length; ++i1) {
+					DummyData data = d[i1];
+					String name = data.fieldName;
+					double value = Double.parseDouble(data.fieldValue);
+					if (name.equals("healincreasepercent")) {
+						healincrease += value;
+					}
+				}
+			}
+			for(int i=0;i<4;i++) {
+				if (player.getCurrentArmor(i) != null && BT_Utils.itemHasEffect(player.getCurrentArmor(i))) {
+					ItemStack stack = player.getCurrentArmor(i);
+					String dummyDataString = stack.getTagCompound().getCompoundTag("BT_TagList").getString("BT_Buffs");
+					DummyData[] d = DataStorage.parseData(dummyDataString);
+					for (int i1 = 0; i1 < d.length; ++i1) {
+						DummyData data = d[i1];
+						String name = data.fieldName;
+						double value = Double.parseDouble(data.fieldValue);
+						if (name.equals("healincreasepercent")) {
+							healincrease += value;
+						}
+					}
+				}
+			}
+			event.amount *= 1 + healincrease;
+		}
+	}
 
 
 	@SubscribeEvent
