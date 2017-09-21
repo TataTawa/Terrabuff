@@ -120,6 +120,11 @@ public class BT_Utils {
 					l2.add(new DummyData("healincreasepercent",g));
 				}
 
+				if(random.nextDouble()<0.07 * (1 + magicfind/5) )
+				{
+					l2.add(new DummyData("damagefullmoon",1.0));
+				}
+
 				if(random.nextDouble()<0.2 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (1 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}

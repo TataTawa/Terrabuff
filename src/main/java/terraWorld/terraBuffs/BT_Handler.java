@@ -13,18 +13,17 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.EntitySpellParticleFX;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemDye;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -235,19 +234,19 @@ public class BT_Handler{
 					}
 					else if(d[i].fieldName.equals("poisonenemywhenhited"))
 					{
-						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者中毒 "+"+"+(int)da + "%");
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者中毒概率 "+"+"+(int)da + "%");
 					}
 					else if(d[i].fieldName.equals("slowenemywhenhited"))
 					{
-						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者减速 "+"+"+(int)da + "%");
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者减速概率 "+"+"+(int)da + "%");
 					}
 					else if(d[i].fieldName.equals("weaknessenemywhenhited"))
 					{
-						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者虚弱 "+"+"+(int)da + "%");
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者虚弱概率 "+"+"+(int)da + "%");
 					}
 					else if(d[i].fieldName.equals("witherenemywhenhited"))
 					{
-						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者凋零 "+"+"+(int)da + "%");
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者凋零概率 "+"+"+(int)da + "%");
 					}
 					else if(d[i].fieldName.equals("damagetoburn"))
 					{
@@ -276,6 +275,14 @@ public class BT_Handler{
 					else if(d[i].fieldName.equals("damageboost"))
 					{
 						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"击中敌人"+(int)da + "%几率暂时强化力量");
+					}
+					else if(d[i].fieldName.equals("damagefullmoon"))
+					{
+						if(!event.entityPlayer.worldObj.isDaytime() && event.entityPlayer.worldObj.getMoonPhase() == 1.0F) {
+							event.toolTip.add(EnumRarityColor.EPIC.getRarityColor() + "满月时伤害倍增!");
+						} else {
+							event.toolTip.add(EnumRarityColor.GOOD.getRarityColor() + "满月时伤害倍增");
+						}
 					}
 					else if(d[i].fieldName.equals("magicFind"))
 					{
@@ -394,6 +401,7 @@ public class BT_Handler{
 				event.entityLiving.hurtResistantTime = 30;
 				if(event.ammount>2) event.ammount-=1;
 				double damageincrease = 0;
+				double damagemultiplier = 1;
 				if(p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem()))
 				{
 					ItemStack stack = p.getCurrentEquippedItem();
@@ -411,7 +419,8 @@ public class BT_Handler{
 						else if(name.equals("crit"))
 						{
 							if(p.worldObj.rand.nextDouble() <= value) {
-								event.ammount *= 2;
+								damagemultiplier *= 2;
+								MiscUtils.spawnParticlesOnServer("magicCrit",(float)event.entity.posX,(float)event.entity.posY,(float)event.entity.posZ,0,0,0);
 							}
 						}
 						else if(name.equals("damagetoburn"))
@@ -425,6 +434,14 @@ public class BT_Handler{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
 								p.addPotionEffect(new PotionEffect(Potion.damageBoost.getId(),40));
+							}
+						}
+						else if(name.equals("damagefullmoon"))
+						{
+							if(!p.worldObj.isDaytime() && p.worldObj.getMoonPhase() == 1.0F) {
+								damagemultiplier *= 2;
+								//event.entity.boundingBox.
+								MiscUtils.spawnParticlesOnServer("instantSpell",(float)event.entity.posX,(float)event.entity.posY,(float)event.entity.posZ,0,0,0);
 							}
 						}
 						else if(name.equals("stealth"))
@@ -460,6 +477,7 @@ public class BT_Handler{
 							p.motionZ *= 0.6;
 						}
 					}
+					event.ammount *= damagemultiplier;
 					if(damageincrease > 0.5) damageincrease = 0.5;
 					event.ammount *= 1+damageincrease;
 				}
