@@ -1,10 +1,7 @@
 package terraWorld.terraBuffs;
 
 import DummyCore.Events.DummyEvent_OnClientGUIButtonPress;
-import DummyCore.Utils.DataStorage;
-import DummyCore.Utils.DummyData;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;

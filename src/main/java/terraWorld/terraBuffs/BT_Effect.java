@@ -3,7 +3,6 @@ package terraWorld.terraBuffs;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import DummyCore.Utils.DummyData;
 import DummyCore.Utils.EnumRarityColor;
 

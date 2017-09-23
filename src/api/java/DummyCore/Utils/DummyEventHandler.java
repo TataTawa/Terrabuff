@@ -1,9 +1,13 @@
 package DummyCore.Utils;
 
 import java.util.Arrays;
+import java.util.List;
 
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
@@ -113,13 +117,32 @@ public class DummyEventHandler {
 				if(modData.fieldName.equalsIgnoreCase("mod") && modData.fieldValue.equalsIgnoreCase("dummycore.particle"))
 				{
 					String type = packetData[1].fieldValue;
-					float x = Float.parseFloat(packetData[2].fieldValue);
-					float y = Float.parseFloat(packetData[3].fieldValue);
-					float z = Float.parseFloat(packetData[4].fieldValue);
-					double r = Double.parseDouble(packetData[5].fieldValue);
-					double g = Double.parseDouble(packetData[6].fieldValue);
-					double b = Double.parseDouble(packetData[7].fieldValue);
-					event.recievedEntity.worldObj.spawnParticle(type, x, y, z, r, g, b);
+					for(int i=0;i<(packetData.length-2)/9;i++) {
+						float x = Float.parseFloat(packetData[2+i*9].fieldValue);
+						float y = Float.parseFloat(packetData[3+i*9].fieldValue);
+						float z = Float.parseFloat(packetData[4+i*9].fieldValue);
+						double x1 = Double.parseDouble(packetData[5+i*9].fieldValue);
+						double y1 = Double.parseDouble(packetData[6+i*9].fieldValue);
+						double z1 = Double.parseDouble(packetData[7+i*9].fieldValue);
+						float r = Float.parseFloat(packetData[8+i*9].fieldValue);
+						float g = Float.parseFloat(packetData[9+i*9].fieldValue);
+						float b = Float.parseFloat(packetData[10+i*9].fieldValue);
+						if (r == 0 && g == 0 && b == 0) {
+							event.recievedEntity.worldObj.spawnParticle(type, x, y, z, r, g, b);
+						} else {
+							try {
+								List worldAccesses = (List) ReflectionHelper.findField(World.class, "worldAccesses").get(event.recievedEntity.worldObj);
+								for (int j = 0; j < worldAccesses.size(); ++j) {
+									if (worldAccesses.get(j) instanceof RenderGlobal) {
+										EntityFX entityFX = ((RenderGlobal) worldAccesses.get(j)).doSpawnParticle(type, x, y, z, x1, y1, z1);
+										entityFX.setRBGColorF(r, g, b);
+									}
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
 				}
 				if(modData.fieldName.equalsIgnoreCase("mod") && modData.fieldValue.equalsIgnoreCase("dummycore.sound"))
 				{

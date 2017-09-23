@@ -55,7 +55,7 @@ public class CoreInitialiser{
 	public static CoreInitialiser instance;
 	public static DummyConfig cfg = new DummyConfig();
 	public static SimpleNetworkWrapper network;
-	@SidedProxy(clientSide = "DummyCore.Utils.NetProxy_Client",serverSide = "DummyCore.Utils.NetProxy_Server")
+	@SidedProxy(clientSide = "NetProxy_Client",serverSide = "NetProxy_Server")
 	public static NetProxy_Server proxy;
 	public static final DummyPacketHandler packetHandler = new DummyPacketHandler();
 	

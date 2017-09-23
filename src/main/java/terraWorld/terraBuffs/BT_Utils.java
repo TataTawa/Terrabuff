@@ -114,6 +114,12 @@ public class BT_Utils {
 					l2.add(new DummyData("damagetoburn",g));
 				}
 
+				if(random.nextDouble()<0.04 * (1 + magicfind/5) )
+				{
+					while ((g = Math.abs(random.nextGaussian() / (30 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					l2.add(new DummyData("frostenemy",g));
+				}
+
 				if(random.nextDouble()<0.07 * (1 + magicfind/5) )
 				{
 					while ((g = Math.abs(random.nextGaussian() / (8 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
@@ -122,7 +128,7 @@ public class BT_Utils {
 
 				if(random.nextDouble()<0.07 * (1 + magicfind/5) )
 				{
-					l2.add(new DummyData("damagefullmoon",1.0));
+					l2.add(new DummyData("damagedarkmoon",1.0));
 				}
 
 				if(random.nextDouble()<0.2 * (1 + magicfind/5) )
@@ -240,6 +246,11 @@ public class BT_Utils {
 				{
 					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
 					l2.add(new DummyData("witherenemywhenhited",g));
+				}
+				if(random.nextDouble()<0.02 * (1 + magicfind/5) )
+				{
+					while ((g = Math.abs(random.nextGaussian() / (40 * (1 + magicfind/20)) )) > 1 || g < 0.01) {}
+					l2.add(new DummyData("thunderaurawhenhited",g));
 				}
 				if(random.nextDouble()<0.08 * (1 + magicfind/5) )
 				{

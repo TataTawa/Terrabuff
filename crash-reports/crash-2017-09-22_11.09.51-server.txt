@@ -1,0 +1,135 @@
+---- Minecraft Crash Report ----
+// My bad.
+
+Time: 9/22/17 11:09 AM
+Description: Ticking entity
+
+java.lang.ArrayIndexOutOfBoundsException: 180
+	at net.minecraft.entity.EntityLivingBase.onNewPotionEffect(EntityLivingBase.java:767)
+	at net.minecraft.entity.player.EntityPlayerMP.onNewPotionEffect(EntityPlayerMP.java:1001)
+	at net.minecraft.entity.EntityLivingBase.addPotionEffect(EntityLivingBase.java:712)
+	at terraWorld.terraBuffs.BT_Handler.event_LivingHurtEvent(BT_Handler.java:488)
+	at cpw.mods.fml.common.eventhandler.ASMEventHandler_22_BT_Handler_event_LivingHurtEvent_LivingHurtEvent.invoke(.dynamic)
+	at cpw.mods.fml.common.eventhandler.ASMEventHandler.invoke(ASMEventHandler.java:54)
+	at cpw.mods.fml.common.eventhandler.EventBus.post(EventBus.java:140)
+	at net.minecraftforge.common.ForgeHooks.onLivingHurt(ForgeHooks.java:300)
+	at net.minecraft.entity.player.EntityPlayer.damageEntity(EntityPlayer.java:1218)
+	at net.minecraft.entity.EntityLivingBase.attackEntityFrom(EntityLivingBase.java:870)
+	at net.minecraft.entity.player.EntityPlayer.attackEntityFrom(EntityPlayer.java:1161)
+	at net.minecraft.entity.player.EntityPlayerMP.attackEntityFrom(EntityPlayerMP.java:532)
+	at net.minecraft.entity.monster.EntityMob.attackEntityAsMob(EntityMob.java:140)
+	at net.minecraft.entity.monster.EntityZombie.attackEntityAsMob(EntityZombie.java:340)
+	at net.minecraft.entity.ai.EntityAIAttackOnCollide.updateTask(EntityAIAttackOnCollide.java:167)
+	at net.minecraft.entity.ai.EntityAITasks.onUpdateTasks(EntityAITasks.java:125)
+	at net.minecraft.entity.EntityLiving.updateAITasks(EntityLiving.java:613)
+	at net.minecraft.entity.EntityLivingBase.onLivingUpdate(EntityLivingBase.java:1983)
+	at net.minecraft.entity.EntityLiving.onLivingUpdate(EntityLiving.java:431)
+	at net.minecraft.entity.monster.EntityMob.onLivingUpdate(EntityMob.java:39)
+	at net.minecraft.entity.monster.EntityZombie.onLivingUpdate(EntityZombie.java:243)
+	at net.minecraft.entity.EntityLivingBase.onUpdate(EntityLivingBase.java:1816)
+	at net.minecraft.entity.EntityLiving.onUpdate(EntityLiving.java:250)
+	at net.minecraft.entity.monster.EntityMob.onUpdate(EntityMob.java:47)
+	at net.minecraft.entity.monster.EntityZombie.onUpdate(EntityZombie.java:335)
+	at net.minecraft.world.World.updateEntityWithOptionalForce(World.java:2298)
+	at net.minecraft.world.WorldServer.updateEntityWithOptionalForce(WorldServer.java:684)
+	at net.minecraft.world.World.updateEntity(World.java:2258)
+	at net.minecraft.world.World.updateEntities(World.java:2108)
+	at net.minecraft.world.WorldServer.updateEntities(WorldServer.java:515)
+	at net.minecraft.server.MinecraftServer.updateTimeLightAndEntities(MinecraftServer.java:703)
+	at net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:614)
+	at net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:118)
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:485)
+	at net.minecraft.server.MinecraftServer$2.run(MinecraftServer.java:752)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Stacktrace:
+	at net.minecraft.entity.EntityLivingBase.onNewPotionEffect(EntityLivingBase.java:767)
+	at net.minecraft.entity.player.EntityPlayerMP.onNewPotionEffect(EntityPlayerMP.java:1001)
+	at net.minecraft.entity.EntityLivingBase.addPotionEffect(EntityLivingBase.java:712)
+	at terraWorld.terraBuffs.BT_Handler.event_LivingHurtEvent(BT_Handler.java:488)
+	at cpw.mods.fml.common.eventhandler.ASMEventHandler_22_BT_Handler_event_LivingHurtEvent_LivingHurtEvent.invoke(.dynamic)
+	at cpw.mods.fml.common.eventhandler.ASMEventHandler.invoke(ASMEventHandler.java:54)
+	at cpw.mods.fml.common.eventhandler.EventBus.post(EventBus.java:140)
+	at net.minecraftforge.common.ForgeHooks.onLivingHurt(ForgeHooks.java:300)
+	at net.minecraft.entity.player.EntityPlayer.damageEntity(EntityPlayer.java:1218)
+	at net.minecraft.entity.EntityLivingBase.attackEntityFrom(EntityLivingBase.java:870)
+	at net.minecraft.entity.player.EntityPlayer.attackEntityFrom(EntityPlayer.java:1161)
+	at net.minecraft.entity.player.EntityPlayerMP.attackEntityFrom(EntityPlayerMP.java:532)
+	at net.minecraft.entity.monster.EntityMob.attackEntityAsMob(EntityMob.java:140)
+	at net.minecraft.entity.monster.EntityZombie.attackEntityAsMob(EntityZombie.java:340)
+	at net.minecraft.entity.ai.EntityAIAttackOnCollide.updateTask(EntityAIAttackOnCollide.java:167)
+	at net.minecraft.entity.ai.EntityAITasks.onUpdateTasks(EntityAITasks.java:125)
+	at net.minecraft.entity.EntityLiving.updateAITasks(EntityLiving.java:613)
+	at net.minecraft.entity.EntityLivingBase.onLivingUpdate(EntityLivingBase.java:1983)
+	at net.minecraft.entity.EntityLiving.onLivingUpdate(EntityLiving.java:431)
+	at net.minecraft.entity.monster.EntityMob.onLivingUpdate(EntityMob.java:39)
+	at net.minecraft.entity.monster.EntityZombie.onLivingUpdate(EntityZombie.java:243)
+	at net.minecraft.entity.EntityLivingBase.onUpdate(EntityLivingBase.java:1816)
+	at net.minecraft.entity.EntityLiving.onUpdate(EntityLiving.java:250)
+	at net.minecraft.entity.monster.EntityMob.onUpdate(EntityMob.java:47)
+	at net.minecraft.entity.monster.EntityZombie.onUpdate(EntityZombie.java:335)
+	at net.minecraft.world.World.updateEntityWithOptionalForce(World.java:2298)
+	at net.minecraft.world.WorldServer.updateEntityWithOptionalForce(WorldServer.java:684)
+	at net.minecraft.world.World.updateEntity(World.java:2258)
+
+-- Entity being ticked --
+Details:
+	Entity Type: Zombie (net.minecraft.entity.monster.EntityZombie)
+	Entity ID: 1394
+	Entity Name: Zombie
+	Entity's Exact location: -113.30, 71.00, 240.64
+	Entity's Block location: World: (-114,71,240), Chunk: (at 14,4,0 in -8,15; contains blocks -128,0,240 to -113,255,255), Region: (-1,0; contains chunks -32,0 to -1,31, blocks -512,0,0 to -1,255,511)
+	Entity's Momentum: 0.02, -0.08, -0.07
+Stacktrace:
+	at net.minecraft.world.World.updateEntities(World.java:2108)
+	at net.minecraft.world.WorldServer.updateEntities(WorldServer.java:515)
+
+-- Affected level --
+Details:
+	Level name: 新的世界3
+	All players: 1 total; [EntityPlayerMP['Player60'/442, l='新的世界3', x=-113.59, y=71.00, z=241.42]]
+	Chunk stats: ServerChunkCache: 743 Drop: 0
+	Level seed: -3676513848149720149
+	Level generator: ID 00 - default, ver 1. Features enabled: true
+	Level generator options: 
+	Level spawn location: World: (-104,64,256), Chunk: (at 8,4,0 in -7,16; contains blocks -112,0,256 to -97,255,271), Region: (-1,0; contains chunks -32,0 to -1,31, blocks -512,0,0 to -1,255,511)
+	Level time: 66857 game time, 30911 day time
+	Level dimension: 0
+	Level storage version: 0x04ABD - Anvil
+	Level weather: Rain time: 69671 (now: false), thunder time: 2639 (now: false)
+	Level game mode: Game mode: creative (ID 1). Hardcore: false. Cheats: true
+Stacktrace:
+	at net.minecraft.server.MinecraftServer.updateTimeLightAndEntities(MinecraftServer.java:703)
+	at net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:614)
+	at net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:118)
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:485)
+	at net.minecraft.server.MinecraftServer$2.run(MinecraftServer.java:752)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.7.10
+	Operating System: Mac OS X (x86_64) version 10.11.6
+	Java Version: 1.8.0_92, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 162998280 bytes (155 MB) / 866123776 bytes (826 MB) up to 1908932608 bytes (1820 MB)
+	JVM Flags: 0 total; 
+	AABB Pool Size: 0 (0 bytes; 0 MB) allocated, 0 (0 bytes; 0 MB) used
+	IntCache: cache: 0, tcache: 0, allocated: 12, tallocated: 94
+	FML: MCP v9.05 FML v7.10.99.99 Minecraft Forge 10.13.4.1614 5 mods loaded, 5 mods active
+	States: 'U' = Unloaded 'L' = Loaded 'C' = Constructed 'H' = Pre-initialized 'I' = Initialized 'J' = Post-initialized 'A' = Available 'D' = Disabled 'E' = Errored
+	UCHIJAAAA	mcp{9.05} [Minecraft Coder Pack] (minecraft.jar) 
+	UCHIJAAAA	FML{7.10.99.99} [Forge Mod Loader] (forgeSrc-1.7.10-10.13.4.1614-1.7.10.jar) 
+	UCHIJAAAA	Forge{10.13.4.1614} [Minecraft Forge] (forgeSrc-1.7.10-10.13.4.1614-1.7.10.jar) 
+	UCHIJAAAA	DummyCore{2.0.1710.0.A} [DummyCore] (api) 
+	UCHIJAAAA	buffedtools{1.1.1710.1} [Buffed Tools] (main) 
+	GL info: ~~ERROR~~ RuntimeException: No OpenGL context found in the current thread.
+	[DummyCore]: 'Special case ASM modification mods: ''Note, that this mods might not be involved in the crash in ANY WAY!''DummyCore just prints some known mods for a lot of ASM modifications''DummyCore'
+	Profiler Position: N/A (disabled)
+	Vec3 Pool Size: 0 (0 bytes; 0 MB) allocated, 0 (0 bytes; 0 MB) used
+	Player Count: 1 / 8; [EntityPlayerMP['Player60'/442, l='新的世界3', x=-113.59, y=71.00, z=241.42]]
+	Type: Integrated Server (map_client.txt)
+	Is Modded: Definitely; Client brand changed to 'fml,forge'

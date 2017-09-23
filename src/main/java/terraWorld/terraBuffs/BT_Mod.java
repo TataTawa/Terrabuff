@@ -15,6 +15,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
@@ -22,6 +23,8 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Mod(modid = "buffedtools",name = "Buffed Tools",version = "1.1.1710.1")
 public class BT_Mod {
@@ -29,6 +32,8 @@ public class BT_Mod {
 	static BT_Mod instance;
 	File configDir;
 	BT_Config config;
+	static Map<String,Integer> potionMap = new HashMap<String, Integer>();
+
 	@SidedProxy(serverSide="terraWorld.terraBuffs.BT_ServerProxy",clientSide="terraWorld.terraBuffs.BT_ClientProxy")
 	static BT_ServerProxy proxy;
 	@EventHandler
@@ -60,6 +65,11 @@ public class BT_Mod {
 	public static void onServerStarted(FMLServerStartedEvent event)
 	{
 		BT_EffectsLib.rand = MinecraftServer.getServer().worldServers[0].rand;
+		for(Potion potion : Potion.potionTypes) {
+			if(potion != null) {
+				potionMap.put(potion.getName(),potion.getId());
+			}
+		}
 	}
 	
 

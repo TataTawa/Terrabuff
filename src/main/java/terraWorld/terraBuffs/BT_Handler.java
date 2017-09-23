@@ -10,30 +10,24 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntitySpellParticleFX;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionHelper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
@@ -248,6 +242,10 @@ public class BT_Handler{
 					{
 						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"攻击者凋零概率 "+"+"+(int)da + "%");
 					}
+					else if(d[i].fieldName.equals("thunderaurawhenhited"))
+					{
+						event.toolTip.add(EnumRarityColor.UNIQUE.getRarityColor()+"光环:反击雷电 " +(int)da + "%");
+					}
 					else if(d[i].fieldName.equals("damagetoburn"))
 					{
 						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"对燃烧的敌人伤害 "+"+"+(int)da + "%");
@@ -272,16 +270,23 @@ public class BT_Handler{
 					{
 						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"治疗效果 "+"+"+(int)da + "%");
 					}
+					else if(d[i].fieldName.equals("frostenemy"))
+					{
+						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"冻结目标 "+"+"+(int)da + "%");
+					}
 					else if(d[i].fieldName.equals("damageboost"))
 					{
 						event.toolTip.add(EnumRarityColor.GOOD.getRarityColor()+"击中敌人"+(int)da + "%几率暂时强化力量");
 					}
-					else if(d[i].fieldName.equals("damagefullmoon"))
+					else if(d[i].fieldName.equals("damagedarkmoon"))
 					{
-						if(!event.entityPlayer.worldObj.isDaytime() && event.entityPlayer.worldObj.getMoonPhase() == 1.0F) {
-							event.toolTip.add(EnumRarityColor.EPIC.getRarityColor() + "满月时伤害倍增!");
+						EnumChatFormatting color;
+						while(!(color = EnumChatFormatting.values()[event.entityPlayer.worldObj.rand.nextInt(EnumChatFormatting.values().length)]).isColor()){}
+						if(event.entityPlayer.worldObj.getWorldTime() % 24000 > 12000 && event.entityPlayer.worldObj.getCurrentMoonPhaseFactor() == 0.0F) {
+							event.toolTip.add(color.toString() + "朔月时伤害倍增!");
+							//event.toolTip.add(EnumRarityColor.EPIC.getRarityColor() + "朔月时伤害倍增!");
 						} else {
-							event.toolTip.add(EnumRarityColor.GOOD.getRarityColor() + "满月时伤害倍增");
+							event.toolTip.add(EnumRarityColor.GOOD.getRarityColor() + "朔月时伤害倍增");
 						}
 					}
 					else if(d[i].fieldName.equals("magicFind"))
@@ -402,6 +407,15 @@ public class BT_Handler{
 				if(event.ammount>2) event.ammount-=1;
 				double damageincrease = 0;
 				double damagemultiplier = 1;
+				if(p.worldObj.rand.nextDouble() < 0.01) {
+					addPotionEffect(event.entityLiving,"Spell Reflect",400,0);
+				}
+				if(p.worldObj.rand.nextDouble() < 0.01) {
+					addPotionEffect(event.entityLiving,"potion.vacuum",200,0);
+				}
+				if(p.worldObj.rand.nextDouble() < 0.002) {
+					addPotionEffect(event.entityLiving,"potion.shock",200,0);
+				}
 				if(p.getCurrentEquippedItem() != null && BT_Utils.itemHasEffect(p.getCurrentEquippedItem()))
 				{
 					ItemStack stack = p.getCurrentEquippedItem();
@@ -420,7 +434,30 @@ public class BT_Handler{
 						{
 							if(p.worldObj.rand.nextDouble() <= value) {
 								damagemultiplier *= 2;
-								MiscUtils.spawnParticlesOnServer("magicCrit",(float)event.entity.posX,(float)event.entity.posY,(float)event.entity.posZ,0,0,0);
+
+								final int max = 100;
+								double width = event.entity.width > event.entity.height ? event.entity.width : event.entity.height;
+								float[] posX = new float[max];
+								float[] posY = new float[max];
+								float[] posZ = new float[max];
+								double[] posX1 = new double[max];
+								double[] posY1 = new double[max];
+								double[] posZ1 = new double[max];
+								float[] r = new float[max];
+								float[] g = new float[max];
+								float[] b = new float[max];
+								for(int i=0;i<max;i++) {
+									posX[i]=(float) event.entity.posX;
+									posY[i]=(float) event.entity.posY + event.entity.height/2;
+									posZ[i]=(float) event.entity.posZ;
+									posX1[i]=width * p.worldObj.rand.nextGaussian()/2;
+									posY1[i]=width * p.worldObj.rand.nextGaussian()/2;
+									posZ1[i]=width * p.worldObj.rand.nextGaussian()/2;
+									r[i]=1;
+									g[i]=0.2F;
+									b[i]=0.8f;
+								}
+								MiscUtils.spawnParticlesOnServer("magicCrit",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 							}
 						}
 						else if(name.equals("damagetoburn"))
@@ -434,14 +471,118 @@ public class BT_Handler{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
 								p.addPotionEffect(new PotionEffect(Potion.damageBoost.getId(),40));
+
+								final int max = 20;
+								double width = p.width > p.height ? p.width : p.height;
+								float[] posX = new float[max];
+								float[] posY = new float[max];
+								float[] posZ = new float[max];
+								double[] posX1 = new double[max];
+								double[] posY1 = new double[max];
+								double[] posZ1 = new double[max];
+								float[] r = new float[max];
+								float[] g = new float[max];
+								float[] b = new float[max];
+								for(int i=0;i<max;i++) {
+									posX[i]=(float) p.posX + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posY[i]=(float) p.posY + p.height/2 + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posZ[i]=(float) p.posZ + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posX1[i]=0;
+									posY1[i]=0;
+									posZ1[i]=0;
+									r[i]=0;
+									g[i]=0.6F;
+									b[i]=0;
+								}
+								MiscUtils.spawnParticlesOnServer("dripLava",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 							}
 						}
-						else if(name.equals("damagefullmoon"))
+						else if(name.equals("frostenemy"))
 						{
-							if(!p.worldObj.isDaytime() && p.worldObj.getMoonPhase() == 1.0F) {
+							if(p.worldObj.rand.nextDouble() <= value)
+							{
+								p.addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),40,6));
+
+								final int max = 100;
+								double width = event.entity.width > event.entity.height ? event.entity.width : event.entity.height;
+								float[] posX = new float[max];
+								float[] posY = new float[max];
+								float[] posZ = new float[max];
+								double[] posX1 = new double[max];
+								double[] posY1 = new double[max];
+								double[] posZ1 = new double[max];
+								float[] r = new float[max];
+								float[] g = new float[max];
+								float[] b = new float[max];
+								double d4 ;
+								double d13;
+								double d5 ;
+								double d6 ;
+								double d7 ;
+								for(int i=0;i<max;i++) {
+									d4 = p.worldObj.rand.nextDouble() * 4.0D;
+									d13 = p.worldObj.rand.nextDouble() * Math.PI * 2.0D;
+									d5 = Math.cos(d13) * d4;
+									d6 = 0.01D + p.worldObj.rand.nextDouble() * 0.5D;
+									d7 = Math.sin(d13) * d4;
+									posX[i]=(float)event.entity.posX + (float)d5 * 0.1F;
+									posY[i]=(float)event.entity.posY + event.entity.height/3;
+									posZ[i]=(float)event.entity.posZ + (float)d7 * 0.1F;
+									posX1[i]=d5 * p.worldObj.rand.nextDouble();
+									posY1[i]=d6 * p.worldObj.rand.nextDouble();
+									posZ1[i]=d7 * p.worldObj.rand.nextDouble();
+									r[i]=0;
+									g[i]=0.8F;
+									b[i]=1;
+								}
+								MiscUtils.spawnParticlesOnServer("instantSpell",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
+							}
+						}
+						else if(name.equals("damagedarkmoon"))
+						{
+							if(p.worldObj.getWorldTime() % 24000 > 12000 && p.worldObj.getCurrentMoonPhaseFactor() == 0.0F) {
 								damagemultiplier *= 2;
-								//event.entity.boundingBox.
-								MiscUtils.spawnParticlesOnServer("instantSpell",(float)event.entity.posX,(float)event.entity.posY,(float)event.entity.posZ,0,0,0);
+
+
+								/*
+								double width = event.entity.width > event.entity.height ? event.entity.width : event.entity.height;
+
+								for(int i=0;i<100;i++) {
+									MiscUtils.spawnParticlesOnServer("slime",
+											(float) event.entity.posX + (float) (width * p.worldObj.rand.nextGaussian()) / 4,
+											(float) event.entity.posY + event.entity.height * 0.75f + (float) (width * p.worldObj.rand.nextGaussian()) / 4,
+											(float) event.entity.posZ + (float) (width * p.worldObj.rand.nextGaussian()) / 4,
+											0,
+											//width * ( 1 + p.worldObj.rand.nextGaussian()/4 ) / 20,
+											0,
+											0,
+											0.8, 0, 0.8);
+
+								}*/
+
+								final int max = 100;
+								double width = event.entity.width > event.entity.height ? event.entity.width : event.entity.height;
+								float[] posX = new float[max];
+								float[] posY = new float[max];
+								float[] posZ = new float[max];
+								double[] posX1 = new double[max];
+								double[] posY1 = new double[max];
+								double[] posZ1 = new double[max];
+								float[] r = new float[max];
+								float[] g = new float[max];
+								float[] b = new float[max];
+								for(int i=0;i<max;i++) {
+									posX[i]=(float) event.entity.posX;
+									posY[i]=(float) event.entity.posY + event.entity.height/2;
+									posZ[i]=(float) event.entity.posZ;
+									posX1[i]=width * p.worldObj.rand.nextGaussian()/2;
+									posY1[i]=width * p.worldObj.rand.nextGaussian()/2;
+									posZ1[i]=width * p.worldObj.rand.nextGaussian()/2;
+									r[i]=1;
+									g[i]=0.2F;
+									b[i]=0.2f;
+								}
+								MiscUtils.spawnParticlesOnServer("magicCrit",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 							}
 						}
 						else if(name.equals("stealth"))
@@ -453,6 +594,30 @@ public class BT_Handler{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
 								event.entityLiving.addPotionEffect(new PotionEffect(Potion.poison.getId(),(int)(value * 2000)));
+
+								final int max = 20;
+								double width = event.entity.width > event.entity.height ? event.entity.width : event.entity.height;
+								float[] posX = new float[max];
+								float[] posY = new float[max];
+								float[] posZ = new float[max];
+								double[] posX1 = new double[max];
+								double[] posY1 = new double[max];
+								double[] posZ1 = new double[max];
+								float[] r = new float[max];
+								float[] g = new float[max];
+								float[] b = new float[max];
+								for(int i=0;i<max;i++) {
+									posX[i]=(float) event.entity.posX + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posY[i]=(float) event.entity.posY + event.entity.height/4 + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posZ[i]=(float) event.entity.posZ + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posX1[i]=0;
+									posY1[i]=width * ( 1 + p.worldObj.rand.nextGaussian()/4 ) / 20;
+									posZ1[i]=0;
+									r[i]=0;
+									g[i]=0.6f;
+									b[i]=0;
+								}
+								MiscUtils.spawnParticlesOnServer("flame",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 							}
 						}
 						else if(name.equals("weakness"))
@@ -460,6 +625,30 @@ public class BT_Handler{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
 								event.entityLiving.addPotionEffect(new PotionEffect(Potion.weakness.getId(),(int)(value * 2000)));
+
+								final int max = 50;
+								double width = event.entity.width > event.entity.height ? event.entity.width : event.entity.height;
+								float[] posX = new float[max];
+								float[] posY = new float[max];
+								float[] posZ = new float[max];
+								double[] posX1 = new double[max];
+								double[] posY1 = new double[max];
+								double[] posZ1 = new double[max];
+								float[] r = new float[max];
+								float[] g = new float[max];
+								float[] b = new float[max];
+								for(int i=0;i<max;i++) {
+									posX[i]=(float) event.entity.posX + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posY[i]=(float) event.entity.posY + event.entity.height * (1+(float)p.worldObj.rand.nextGaussian()/5);
+									posZ[i]=(float) event.entity.posZ + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posX1[i]=0;
+									posY1[i]=0;
+									posZ1[i]=0;
+									r[i]=1;
+									g[i]=0.2f;
+									b[i]=0.2f;
+								}
+								MiscUtils.spawnParticlesOnServer("enchantmenttable",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 							}
 						}
 						else if(name.equals("slow"))
@@ -467,6 +656,30 @@ public class BT_Handler{
 							if(p.worldObj.rand.nextDouble() <= value)
 							{
 								event.entityLiving.addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),(int)(value * 2000),2));
+
+								final int max = 20;
+								double width = event.entity.width > event.entity.height ? event.entity.width : event.entity.height;
+								float[] posX = new float[max];
+								float[] posY = new float[max];
+								float[] posZ = new float[max];
+								double[] posX1 = new double[max];
+								double[] posY1 = new double[max];
+								double[] posZ1 = new double[max];
+								float[] r = new float[max];
+								float[] g = new float[max];
+								float[] b = new float[max];
+								for(int i=0;i<max;i++) {
+									posX[i]=(float) event.entity.posX + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posY[i]=(float) event.entity.posY + event.entity.height / 4 + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posZ[i]=(float) event.entity.posZ + (float) (width * p.worldObj.rand.nextGaussian()) / 4;
+									posX1[i]=0;
+									posY1[i]=width * (1 + p.worldObj.rand.nextGaussian() / 4) / 20;
+									posZ1[i]=0;
+									r[i]=0.1f;
+									g[i]=0.1f;
+									b[i]=1;
+								}
+								MiscUtils.spawnParticlesOnServer("flame",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 							}
 						}
 						else if(name.equals("knock"))
@@ -484,7 +697,134 @@ public class BT_Handler{
 			}
 			if(event.entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer)event.entity;
+				
 				double damageruduce = 0;
+				if(player.worldObj.rand.nextDouble() < 0.01) {
+					damageruduce -= 1;
+
+					final int max = 100;
+					double width = player.width > player.height ? player.width : player.height;
+					float[] posX = new float[max];
+					float[] posY = new float[max];
+					float[] posZ = new float[max];
+					double[] posX1 = new double[max];
+					double[] posY1 = new double[max];
+					double[] posZ1 = new double[max];
+					float[] r = new float[max];
+					float[] g = new float[max];
+					float[] b = new float[max];
+					for(int i=0;i<max;i++) {
+						posX[i]=(float) player.posX;
+						posY[i]=(float) player.posY + player.height/2;
+						posZ[i]=(float) player.posZ;
+						posX1[i]=width * player.worldObj.rand.nextGaussian()/2;
+						posY1[i]=width * player.worldObj.rand.nextGaussian()/2;
+						posZ1[i]=width * player.worldObj.rand.nextGaussian()/2;
+						r[i]=1;
+						g[i]=0.2F;
+						b[i]=0.8f;
+					}
+					MiscUtils.spawnParticlesOnServer("magicCrit",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
+				}
+				if(player.worldObj.rand.nextDouble() < 0.005) {
+					addPotionEffect(player,"potion.blurred",200,0);
+				}
+				if(player.worldObj.rand.nextDouble() < 0.005) {
+					addPotionEffect(player,"immersiveengineering.potion.slippery",200,0);
+				}
+				if(player.worldObj.rand.nextDouble() < 0.005) {
+					addPotionEffect(player,"immersiveengineering.potion.flammable",200,0);
+				}
+				if(player.worldObj.rand.nextDouble() < 0.001) {
+					addPotionEffect(player,"extrabotany.potion.residualpain",60,0);
+
+					final int max = 50;
+					double width = player.width > player.height ? player.width : player.height;
+					float[] posX = new float[max];
+					float[] posY = new float[max];
+					float[] posZ = new float[max];
+					double[] posX1 = new double[max];
+					double[] posY1 = new double[max];
+					double[] posZ1 = new double[max];
+					float[] r = new float[max];
+					float[] g = new float[max];
+					float[] b = new float[max];
+					for(int i=0;i<max;i++) {
+						posX[i]=(float) player.posX + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+						posY[i]=(float) player.posY + player.height/4 + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+						posZ[i]=(float) player.posZ + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+						posX1[i]=0;
+						posY1[i]=width * ( 1 + player.worldObj.rand.nextGaussian()/4 ) / 20;
+						posZ1[i]=0;
+						r[i]=0.4f;
+						g[i]=0;
+						b[i]=1;
+					}
+					MiscUtils.spawnParticlesOnServer("flame",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
+				}
+				if(player.worldObj.rand.nextDouble() < 0.001) {
+					addPotionEffect(player,"Scramble Synapses",60,0);
+
+					final int max = 50;
+					double width = player.width > player.height ? player.width : player.height;
+					float[] posX = new float[max];
+					float[] posY = new float[max];
+					float[] posZ = new float[max];
+					double[] posX1 = new double[max];
+					double[] posY1 = new double[max];
+					double[] posZ1 = new double[max];
+					float[] r = new float[max];
+					float[] g = new float[max];
+					float[] b = new float[max];
+					for(int i=0;i<max;i++) {
+						posX[i]=(float) player.posX + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+						posY[i]=(float) player.posY + player.height/4 + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+						posZ[i]=(float) player.posZ + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+						posX1[i]=0;
+						posY1[i]=width * ( 1 + player.worldObj.rand.nextGaussian()/4 ) / 20;
+						posZ1[i]=0;
+						r[i]=0.4f;
+						g[i]=0.5f;
+						b[i]=0;
+					}
+					MiscUtils.spawnParticlesOnServer("flame",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
+				}
+				if(player.worldObj.rand.nextDouble() < 0.001) {
+					player.addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),40,6));
+
+					final int max = 100;
+					float[] posX = new float[max];
+					float[] posY = new float[max];
+					float[] posZ = new float[max];
+					double[] posX1 = new double[max];
+					double[] posY1 = new double[max];
+					double[] posZ1 = new double[max];
+					float[] r = new float[max];
+					float[] g = new float[max];
+					float[] b = new float[max];
+					double d4 ;
+					double d13;
+					double d5 ;
+					double d6 ;
+					double d7 ;
+					for(int i=0;i<max;i++) {
+						d4 = player.worldObj.rand.nextDouble() * 4.0D;
+						d13 = player.worldObj.rand.nextDouble() * Math.PI * 2.0D;
+						d5 = Math.cos(d13) * d4;
+						d6 = 0.01D + player.worldObj.rand.nextDouble() * 0.5D;
+						d7 = Math.sin(d13) * d4;
+						posX[i]=(float)player.posX + (float)d5 * 0.1F;
+						posY[i]=(float)player.posY + player.height/3;
+						posZ[i]=(float)player.posZ + (float)d7 * 0.1F;
+						posX1[i]=d5 * player.worldObj.rand.nextDouble();
+						posY1[i]=d6 * player.worldObj.rand.nextDouble();
+						posZ1[i]=d7 * player.worldObj.rand.nextDouble();
+						r[i]=0;
+						g[i]=0.8F;
+						b[i]=1;
+					}
+					MiscUtils.spawnParticlesOnServer("instantSpell",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
+				}
 				for(int i=0;i<4;i++) {
 					if (player.getCurrentArmor(i) != null && BT_Utils.itemHasEffect(player.getCurrentArmor(i))) {
 						ItemStack stack = player.getCurrentArmor(i);
@@ -520,31 +860,133 @@ public class BT_Handler{
 									player.addPotionEffect(new PotionEffect(Potion.field_76444_x.getId(),60));
 								}
 							}
+							if (name.equals("thunderaurawhenhited")) {
+								if(player.worldObj.rand.nextDouble() < value) {
+									//player.addPotionEffect(new PotionEffect(Potion.field_76444_x.getId(),60));
+									addPotionEffect(player, "potion.shock", 100 , 0);
+								}
+							}
 							if (name.equals("poisonenemywhenhited")) {
-								if(event.source.getEntity() instanceof EntityLiving) {
+								if(event.source.getEntity() instanceof EntityLivingBase) {
 									if(player.worldObj.rand.nextDouble() < value) {
-										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.poison.getId(),60));
+										((EntityLivingBase) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.poison.getId(),60));
+
+										final int max = 20;
+										double width = event.source.getEntity().width > event.source.getEntity().height ? event.source.getEntity().width : event.source.getEntity().height;
+										float[] posX = new float[max];
+										float[] posY = new float[max];
+										float[] posZ = new float[max];
+										double[] posX1 = new double[max];
+										double[] posY1 = new double[max];
+										double[] posZ1 = new double[max];
+										float[] r = new float[max];
+										float[] g = new float[max];
+										float[] b = new float[max];
+										for(int j=0;j<max;j++) {
+											posX[j]=(float) event.source.getEntity().posX + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posY[j]=(float) event.source.getEntity().posY + event.source.getEntity().height/4 + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posZ[j]=(float) event.source.getEntity().posZ + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posX1[j]=0;
+											posY1[j]=width * ( 1 + player.worldObj.rand.nextGaussian()/4 ) / 20;
+											posZ1[j]=0;
+											r[j]=0;
+											g[j]=0.6f;
+											b[j]=0;
+										}
+										MiscUtils.spawnParticlesOnServer("flame",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 									}
 								}
 							}
 							if (name.equals("slowenemywhenhited")) {
-								if(event.source.getEntity() instanceof EntityLiving) {
+								if(event.source.getEntity() instanceof EntityLivingBase) {
 									if(player.worldObj.rand.nextDouble() < value) {
-										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),60,2));
+										((EntityLivingBase) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.moveSlowdown.getId(),60,2));
+
+										final int max = 20;
+										double width = event.source.getEntity().width > event.source.getEntity().height ? event.source.getEntity().width : event.source.getEntity().height;
+										float[] posX = new float[max];
+										float[] posY = new float[max];
+										float[] posZ = new float[max];
+										double[] posX1 = new double[max];
+										double[] posY1 = new double[max];
+										double[] posZ1 = new double[max];
+										float[] r = new float[max];
+										float[] g = new float[max];
+										float[] b = new float[max];
+										for(int j=0;j<max;j++) {
+											posX[j]=(float) event.source.getEntity().posX + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posY[j]=(float) event.source.getEntity().posY + event.source.getEntity().height/4 + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posZ[j]=(float) event.source.getEntity().posZ + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posX1[j]=0;
+											posY1[j]=width * ( 1 + player.worldObj.rand.nextGaussian()/4 ) / 20;
+											posZ1[j]=0;
+											r[j]=0.1f;
+											g[j]=0.1f;
+											b[j]=1;
+										}
+										MiscUtils.spawnParticlesOnServer("flame",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 									}
 								}
 							}
 							if (name.equals("weaknessenemywhenhited")) {
-								if(event.source.getEntity() instanceof EntityLiving) {
+								if(event.source.getEntity() instanceof EntityLivingBase) {
 									if(player.worldObj.rand.nextDouble() < value) {
-										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.weakness.getId(),60));
+										((EntityLivingBase) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.weakness.getId(),60));
+
+										final int max = 50;
+										double width = event.source.getEntity().width > event.source.getEntity().height ? event.source.getEntity().width : event.source.getEntity().height;
+										float[] posX = new float[max];
+										float[] posY = new float[max];
+										float[] posZ = new float[max];
+										double[] posX1 = new double[max];
+										double[] posY1 = new double[max];
+										double[] posZ1 = new double[max];
+										float[] r = new float[max];
+										float[] g = new float[max];
+										float[] b = new float[max];
+										for(int j=0;j<max;j++) {
+											posX[j]=(float) event.source.getEntity().posX + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posY[j]=(float) event.source.getEntity().posY + event.source.getEntity().height * (1+(float)player.worldObj.rand.nextGaussian()/5);
+											posZ[j]=(float) event.source.getEntity().posZ + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posX1[j]=0;
+											posY1[j]=0;
+											posZ1[j]=0;
+											r[j]=1;
+											g[j]=0.2f;
+											b[j]=0.2f;
+										}
+										MiscUtils.spawnParticlesOnServer("enchantmenttable",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 									}
 								}
 							}
 							if (name.equals("witherenemywhenhited")) {
-								if(event.source.getEntity() instanceof EntityLiving) {
+								if(event.source.getEntity() instanceof EntityLivingBase) {
 									if(player.worldObj.rand.nextDouble() < value) {
-										((EntityLiving) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.wither.getId(),40,2));
+										((EntityLivingBase) event.source.getEntity()).addPotionEffect(new PotionEffect(Potion.wither.getId(),40,2));
+
+										final int max = 20;
+										double width = event.source.getEntity().width > event.source.getEntity().height ? event.source.getEntity().width : event.source.getEntity().height;
+										float[] posX = new float[max];
+										float[] posY = new float[max];
+										float[] posZ = new float[max];
+										double[] posX1 = new double[max];
+										double[] posY1 = new double[max];
+										double[] posZ1 = new double[max];
+										float[] r = new float[max];
+										float[] g = new float[max];
+										float[] b = new float[max];
+										for(int j=0;j<max;j++) {
+											posX[j]=(float) event.source.getEntity().posX + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posY[j]=(float) event.source.getEntity().posY + event.source.getEntity().height/4 + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posZ[j]=(float) event.source.getEntity().posZ + (float) (width * player.worldObj.rand.nextGaussian()) / 4;
+											posX1[j]=0;
+											posY1[j]=width * ( 1 + player.worldObj.rand.nextGaussian()/4 ) / 20;
+											posZ1[j]=0;
+											r[j]=0.1f;
+											g[j]=0.1f;
+											b[j]=0.1f;
+										}
+										MiscUtils.spawnParticlesOnServer("flame",posX,posY,posZ,posX1,posY1,posZ1,r,g,b);
 									}
 								}
 							}
@@ -894,6 +1336,12 @@ public class BT_Handler{
 		}catch(Exception e)
 		{
 			return false;
+		}
+	}
+
+	public void addPotionEffect(EntityLivingBase entityLivingBase, String effect, int ticks, int amplifier) {
+		if(BT_Mod.potionMap.containsKey(effect)) {
+			entityLivingBase.addPotionEffect(new PotionEffect(BT_Mod.potionMap.get(effect),ticks,amplifier));
 		}
 	}
 

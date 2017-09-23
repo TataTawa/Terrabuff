@@ -520,23 +520,32 @@ public class MiscUtils {
 	 * @param par6 - particle 1 gen int. Can be motion or color(depends on the particle).
 	 * @param par7 - particle 1 gen int. Can be motion or color(depends on the particle).
 	 */
-	public static void spawnParticlesOnServer(String particleName, float posX, float posY, float posZ, double par5, double par6, double par7)
+	public static void spawnParticlesOnServer(String particleName, float[] posX, float[] posY, float[] posZ, double[] par5, double[] par6, double[] par7, float[] r, float[] g, float[] b)
 	{
 		String dataString = "||mod:DummyCore.Particle";
 		DummyData name = new DummyData("particleName",particleName);
-		DummyData xpos = new DummyData("positionX",posX);
-		DummyData ypos = new DummyData("positionX",posY);
-		DummyData zpos = new DummyData("positionX",posZ);
-		DummyData xmot = new DummyData("par1",par5);
-		DummyData ymot = new DummyData("par2",par6);
-		DummyData zmot = new DummyData("par3",par7);
 		DataStorage.addDataToString(name);
-		DataStorage.addDataToString(xpos);
-		DataStorage.addDataToString(ypos);
-		DataStorage.addDataToString(zpos);
-		DataStorage.addDataToString(xmot);
-		DataStorage.addDataToString(ymot);
-		DataStorage.addDataToString(zmot);
+		for(int i=0;i<posX.length;i++) {
+			DummyData xpos = new DummyData("positionX", posX[i]);
+			DummyData ypos = new DummyData("positionX", posY[i]);
+			DummyData zpos = new DummyData("positionX", posZ[i]);
+			DummyData xmot = new DummyData("par1", par5[i]);
+			DummyData ymot = new DummyData("par2", par6[i]);
+			DummyData zmot = new DummyData("par3", par7[i]);
+			DummyData r1 = new DummyData("r", r[i]);
+			DummyData g1 = new DummyData("g", g[i]);
+			DummyData b1 = new DummyData("b", b[i]);
+
+			DataStorage.addDataToString(xpos);
+			DataStorage.addDataToString(ypos);
+			DataStorage.addDataToString(zpos);
+			DataStorage.addDataToString(xmot);
+			DataStorage.addDataToString(ymot);
+			DataStorage.addDataToString(zmot);
+			DataStorage.addDataToString(r1);
+			DataStorage.addDataToString(g1);
+			DataStorage.addDataToString(b1);
+		}
 		String newDataString = DataStorage.getDataString();
 		dataString+=newDataString;
 		DummyPacketIMSG simplePacket = new DummyPacketIMSG(dataString);
