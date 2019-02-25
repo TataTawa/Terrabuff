@@ -1,0 +1,16 @@
+[
+{
+  "modid": "terrabuff",
+  "name": "TerraBuffs",
+  "description": "Added buffs to weapons and armors",
+  "version": "1.0",
+  "mcversion": "1.7.10",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Tawa"],
+  "credits": "Modbder, Tawa",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

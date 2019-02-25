@@ -1,2 +1,6 @@
-[21:57:07] [main/INFO]: Setting user: Player898
-[21:57:09] [Client thread/INFO]: LWJGL Version: 2.9.1
+[19:47:12] [main/INFO]: Setting user: Player445
+[19:47:16] [Client thread/INFO]: LWJGL Version: 2.9.1
+[19:47:54] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:DummyCore, FMLFileResourcePack:Buffed Tools, FMLFileResourcePack:Dynamic Surroundings
+[19:47:56] [Sound Library Loader/INFO]: Sound engine started
+[19:48:02] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
+[19:48:02] [Client thread/INFO]: Created: 16x16 textures/items-atlas
